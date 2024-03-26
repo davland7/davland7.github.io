@@ -1,51 +1,32 @@
 ---
 interface Props {
-	title: string;
+  frontmatter: {
+    title: string;
+    description: string;
+  };
 }
 
-const { title } = Astro.props;
+const { frontmatter } = Astro.props;
+const { title, description } = frontmatter;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body class="dark:bg-black dark:text-white">
+    <main class="w-full max-w-screen-md m-auto p-5">
+      <section>
+        <article class="prose-base prose-a:underline hover:prose-a:no-underline prose-table:table-auto prose-table:w-full prose-th:px-2 prose-th:py-4 prose-th:border prose-th:border-black prose-th:dark:border-white prose-th:text-left prose-td:p-2 prose-td:border prose-td:border-black prose-td:dark:border-white prose-ul:list-disc">
+          <slot />
+        </article>
+      </section>
+    </main>
 	</body>
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-</style>
