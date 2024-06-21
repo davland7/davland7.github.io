@@ -44,7 +44,6 @@ const FondsFTQ = () => {
               label: "Prix de l’action",
               fill: true,
               borderColor: "#ecc94b",
-              borderWidth: 2,
             },
           ],
           labels,
@@ -65,6 +64,13 @@ const FondsFTQ = () => {
             },
           },
           plugins: {
+            title: {
+              display: true,
+              text: "Historique du prix d’une action",
+            },
+            legend: {
+              display: false
+            },
             tooltip: {
               callbacks: {
                 label: (context) => {
