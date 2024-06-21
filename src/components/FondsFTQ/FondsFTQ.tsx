@@ -24,6 +24,13 @@ const FondsFTQ = () => {
       entry.november,
     ]);
 
+    values.filter(element => {
+      if (element === null) {
+        labels.pop();
+        return values;
+      }
+    });
+
     if (ctx) {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();

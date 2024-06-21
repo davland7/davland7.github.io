@@ -43,6 +43,26 @@ Voir la documentation de [Google Sheets](https://support.google.com/docs/answer/
 
 Après avoir récupéré le data de Google Finance dans Google Sheets, on peut créé une API pour récupérer les devises et les convertir en JSON.
 
+```JavaScript
+function doGet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("currencies");
+  const values = sheet.getDataRange().getValues();
+
+  const currencies = values.map((row) => {
+    const [ name, code, CAD, CHF, CNY, EUR, GBP, JPY, USD ] = row;
+
+    return {
+      code,
+      currencies: { CAD, CHF, CNY, EUR, GBP, JPY, USD },
+      name
+    };
+  });
+
+  return ContentService.createTextOutput(JSON.stringify(currencies)).setMimeType(ContentService.MimeType.JSON);
+}
+```
+
 Par exemple le 17 février 2024 avec un montant de 1$ canadien, on obtient les montants suivants pour les devises suivantes.
 
 | CAD | CHF | CNY | EUR | GBP | JPY | USD |
