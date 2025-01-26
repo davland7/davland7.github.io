@@ -5,7 +5,7 @@ interface Data {
 }
 
 export const data = [
-  { year: 2024, may: 59.11, november: null },
+  { year: 2024, may: 59.11, november: 63.71 },
   { year: 2023, may: 54.73, november: 55.84 },
   { year: 2022, may: 52.61, november: 53.33 },
   { year: 2021, may: 53.21, november: 55.77 },
