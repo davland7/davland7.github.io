@@ -1,3 +1,12 @@
-# GetCurrenciesData
+### Fetch countries
+GET https://de1.api.radio-browser.info/json/countries?order=stationcount&reverse=true&limit=5
 
-GET https://script.google.com/macros/s/AKfycbwm9fIfCs5QrGVlescxZw599Wm5HD37pIPlU5i54gvIegJk_nbwKaazIeAx23HVsRtWAQ/exec
+### Fetch genres (tags)
+GET https://de1.api.radio-browser.info/json/tags?order=stationcount&reverse=true&limit=5
+
+### Search by tag (Example: Dance)
+GET https://de1.api.radio-browser.info/json/stations/search?tag=dance&order=lastchecktime&limit=5&reverse=true&hidebroken=true&offset=0
+
+### Search by country (Example: Canada)
+# Note: The country name must start with an uppercase letter (e.g., 'Canada', not 'canada')
+GET https://de1.api.radio-browser.info/json/stations/search?country=Canada&order=lastchecktime&limit=5&reverse=true&hidebroken=true&offset=0
