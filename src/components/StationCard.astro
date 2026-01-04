@@ -1,0 +1,134 @@
+---
+import type { RadioStation } from '../lib/types';
+
+interface Props {
+	station: RadioStation;
+}
+
+const { station } = Astro.props;
+
+const getRPlayerUrl = (url: string) => {
+	return `http://rplayer.js.org/?url=${encodeURIComponent(url)}`;
+};
+
+const rplayerUrl = getRPlayerUrl(station.url);
+---
+
+<div class="station-card">
+	<div class="station-header">
+		<h3>{station.name}</h3>
+	</div>
+
+	<div class="station-specs">
+		{station.country && (
+			<span class="badge badge-country">
+				{station.countrycode && <span class={`fi fi-${station.countrycode}`}></span>}
+				{station.country}
+			</span>
+		)}
+		{station.tags.map((tag) => (
+			<span class="badge badge-genre">{tag}</span>
+		))}
+		{station.language.map((lang) => (
+			<span class="badge badge-lang">{lang}</span>
+		))}
+		{station.codec && station.codec !== "Unknown" && (
+			<span class="badge badge-codec">{station.codec}</span>
+		)}
+		{station.bitrate > 0 && (
+			<span class="badge badge-bitrate">{station.bitrate} kbps</span>
+		)}
+		{station.hls === 1 && <span class="badge badge-hls">HLS</span>}
+	</div>
+
+	<div class="station-actions">
+		<button
+			onclick={`navigator.clipboard.writeText('${station.url}'); alert('URL copiée!')`}
+		>
+			Copier URL
+		</button>
+		<a href={rplayerUrl} target="_blank">
+			Tester
+		</a>
+	</div>
+</div>
+
+<style>
+	.station-card {
+		border-radius: 8px;
+		padding: 16px;
+		background: var(--color-surface);
+		max-width: 400px;
+		display: flex;
+		flex-direction: column;
+		min-height: 200px;
+	}
+
+	.station-header {
+		margin-bottom: 16px;
+	}
+
+	.station-header h3 {
+		margin: 0;
+		font-size: 1.125rem;
+		font-weight: 700;
+	}
+
+	.station-specs {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap;
+		margin-bottom: 16px;
+	}
+
+	.badge {
+		display: inline-block;
+		padding: 4px 8px;
+		background: var(--color-background);
+		border: none;
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.badge-country {
+		background: white;
+		color: var(--color-black);
+	}
+
+	.badge-genre {
+		background: #d1e7ff;
+		color: #1a1a1a;
+	}
+
+	.badge-lang {
+		background: #ffe4b3;
+		color: #1a1a1a;
+	}
+	.badge-codec {
+		background: #e8d4f1;
+		color: #1a1a1a;
+	}
+
+	.badge-bitrate {
+		background: #d4f1e8;
+		color: #1a1a1a;
+	}
+	.badge-hls {
+		background: var(--color-green);
+		color: white;
+	}
+
+	.badge-more {
+		opacity: 0.7;
+	}
+
+	.station-actions {
+		margin-top: auto;
+		display: flex;
+    justify-content: space-between;
+		gap: 8px;
+		margin-top: auto;
+	}
+</style>

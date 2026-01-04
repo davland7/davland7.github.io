@@ -1,0 +1,168 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StationCard from '../../components/StationCard.astro';
+import { fetchTerms, fetchStationsByTerm } from '../../lib/radioBrowser';
+import { SearchType, type RadioStation, type Term } from '../../lib/types';
+import { pageIntros } from '../../lib/content';
+
+type CategoryListProps = {
+	type: "category";
+	categoryName: string;
+	categorySlug: string;
+	categories: Term[];
+};
+
+type StationsProps = {
+	type: "stations";
+	categoryName: string;
+	categorySlug: string;
+	itemName: string;
+	stations: RadioStation[];
+};
+
+type Props = CategoryListProps | StationsProps;
+
+export async function getStaticPaths() {
+	const categories = [
+		{ type: SearchType.Country, name: "Countries", slug: "countries" },
+		{ type: SearchType.Tag, name: "Genres", slug: "genres" },
+	];
+
+	const limitStations = 128;
+	const paths: any[] = [];
+	const categoriesData = await fetchTerms(16);
+
+	for (const category of categories) {
+		const { slug, type, name } = category;
+		const filteredCategories = categoriesData.filter((item) => item.type === type);
+
+		// Category list page
+		paths.push({
+			params: { category: slug, slug: undefined },
+			props: {
+				type: "category",
+				categoryName: name,
+				categorySlug: slug,
+				categories: filteredCategories,
+			},
+		});
+
+		// Individual station pages
+		for (const item of filteredCategories) {
+			const stations = await fetchStationsByTerm({
+				term: item.name,
+				type,
+				limit: limitStations,
+			});
+
+			paths.push({
+				params: { category: slug, slug: item.slug },
+				props: {
+					type: "stations",
+					categoryName: name,
+					categorySlug: slug,
+					itemName: item.name,
+					stations,
+				},
+			});
+		}
+	}
+
+	return paths;
+}
+
+const props = Astro.props as Props;
+const buildDate = new Date().toISOString().split("T")[0];
+---
+
+<Layout>
+	<main>
+		{props.type === "category" && (
+			<>
+				<nav class="breadcrumb">
+					<a href="/">Home</a>
+					<span>/</span>
+					<span>{props.categoryName}</span>
+				</nav>
+				<p class="search-by">
+					Search by: <a href={props.categorySlug === "countries" ? "/genres" : "/countries"}>
+						{props.categorySlug === "countries" ? "Genres" : "Countries"}
+					</a>
+				</p>
+				<h1>{pageIntros.category[props.categorySlug]?.title || props.categoryName}</h1>
+				<p class="intro">{pageIntros.category[props.categorySlug]?.description}</p>
+				<p>
+					{props.categories.map((item, index) => (
+						<>
+							<a href={`/${props.categorySlug}/${item.slug}`}>{item.name}</a>{index < props.categories.length - 1 && ', '}
+						</>
+					))}
+				</p>
+			</>
+		)}
+
+		{props.type === "stations" && (
+			<>
+				<nav class="breadcrumb">
+					<a href="/">Home</a>
+					<span>/</span>
+					<a href={`/${props.categorySlug}`}>{props.categoryName}</a>
+					<span>/</span>
+					<span>{props.itemName}</span>
+				</nav>
+        <p class="search-by">
+          Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
+        </p>
+				<h1>{props.itemName}</h1>
+				<p class="intro">
+					{props.categorySlug === "countries"
+						? pageIntros.stations.country
+						: pageIntros.stations.tag}
+					{' '}Test with <a href="https://rplayer.js.org/" target="_blank">RPlayer</a>.
+				</p>
+				<div class="stations-list">
+					{props.stations.map((station) => (
+						<StationCard station={station} />
+					))}
+				</div>
+			</>
+		)}
+	</main>
+</Layout>
+
+<style>
+  h1 {
+    margin-top: 0;
+  }
+
+	.breadcrumb {
+		margin-bottom: 24px;
+		color: var(--color-text-light);
+	}
+
+	.breadcrumb a {
+		color: var(--color-primary);
+	}
+
+	.breadcrumb span {
+		margin: 0 8px;
+	}
+
+	.search-by {
+		margin-bottom: 16px;
+	}
+
+	.categories-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmin(200px, 1fr));
+		gap: 16px;
+		margin-top: 24px;
+	}
+
+	.stations-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 16px;
+		margin-top: 24px;
+	}
+</style>
