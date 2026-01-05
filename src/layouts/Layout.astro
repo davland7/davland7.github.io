@@ -14,8 +14,10 @@ const buildDate = new Date().toISOString().split("T")[0];
 		<meta name="generator" content={Astro.generator} />
 		<title>Search Stream</title>
 	</head>
-	<body class="container">
-		<slot />
+	<body>
+    <main class="container">
+      <slot />
+    </main>
 	</body>
 </html>
 

@@ -73,6 +73,11 @@ button:focus-visible {
 
 h1 {
   margin: 82px 0 24px;
+  text-transform: capitalize;
+}
+
+h2 {
+  margin: 0 0 16px;
 }
 
 p {

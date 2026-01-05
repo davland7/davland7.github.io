@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import StationCard from '../../components/StationCard.astro';
-import { fetchTerms, fetchStationsByTerm } from '../../lib/radioBrowser';
+import { fetchStationsByTerm, getCategoriesByType } from '../../lib/radioBrowser';
 import { SearchType, type RadioStation, type Term } from '../../lib/types';
 import { pageIntros } from '../../lib/content';
 
@@ -30,11 +30,10 @@ export async function getStaticPaths() {
 
 	const limitStations = 128;
 	const paths: any[] = [];
-	const categoriesData = await fetchTerms(16);
 
 	for (const category of categories) {
 		const { slug, type, name } = category;
-		const filteredCategories = categoriesData.filter((item) => item.type === type);
+		const categoryItems = await getCategoriesByType(type);
 
 		// Category list page
 		paths.push({
@@ -43,12 +42,12 @@ export async function getStaticPaths() {
 				type: "category",
 				categoryName: name,
 				categorySlug: slug,
-				categories: filteredCategories,
+				categories: categoryItems,
 			},
 		});
 
 		// Individual station pages
-		for (const item of filteredCategories) {
+		for (const item of categoryItems) {
 			const stations = await fetchStationsByTerm({
 				term: item.name,
 				type,
@@ -76,58 +75,56 @@ const buildDate = new Date().toISOString().split("T")[0];
 ---
 
 <Layout>
-	<main>
-		{props.type === "category" && (
-			<>
-				<nav class="breadcrumb">
-					<a href="/">Home</a>
-					<span>/</span>
-					<span>{props.categoryName}</span>
-				</nav>
-				<p class="search-by">
-					Search by: <a href={props.categorySlug === "countries" ? "/genres" : "/countries"}>
-						{props.categorySlug === "countries" ? "Genres" : "Countries"}
-					</a>
-				</p>
-				<h1>{pageIntros.category[props.categorySlug]?.title || props.categoryName}</h1>
-				<p class="intro">{pageIntros.category[props.categorySlug]?.description}</p>
-				<p>
-					{props.categories.map((item, index) => (
-						<>
-							<a href={`/${props.categorySlug}/${item.slug}`}>{item.name}</a>{index < props.categories.length - 1 && ', '}
-						</>
-					))}
-				</p>
-			</>
-		)}
+  {props.type === "category" && (
+    <>
+      <nav class="breadcrumb">
+        <a href="/">Home</a>
+        <span>/</span>
+        <span>{props.categoryName}</span>
+      </nav>
+      <p class="search-by">
+        Search by: <a href={props.categorySlug === "countries" ? "/genres" : "/countries"}>
+          {props.categorySlug === "countries" ? "Genres" : "Countries"}
+        </a>
+      </p>
+      <h1>{pageIntros.category[props.categorySlug]?.title || props.categoryName}</h1>
+      <p class="intro">{pageIntros.category[props.categorySlug]?.description}</p>
+      <p>
+        {props.categories.map((item, index) => (
+          <>
+            <a href={`/${props.categorySlug}/${item.slug}`}>{item.name}</a>{index < props.categories.length - 1 && ', '}
+          </>
+        ))}
+      </p>
+    </>
+  )}
 
-		{props.type === "stations" && (
-			<>
-				<nav class="breadcrumb">
-					<a href="/">Home</a>
-					<span>/</span>
-					<a href={`/${props.categorySlug}`}>{props.categoryName}</a>
-					<span>/</span>
-					<span>{props.itemName}</span>
-				</nav>
-        <p class="search-by">
-          Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
-        </p>
-				<h1>{props.itemName}</h1>
-				<p class="intro">
-					{props.categorySlug === "countries"
-						? pageIntros.stations.country
-						: pageIntros.stations.tag}
-					{' '}Test with <a href="https://rplayer.js.org/" target="_blank">RPlayer</a>.
-				</p>
-				<div class="stations-list">
-					{props.stations.map((station) => (
-						<StationCard station={station} />
-					))}
-				</div>
-			</>
-		)}
-	</main>
+  {props.type === "stations" && (
+    <>
+      <nav class="breadcrumb">
+        <a href="/">Home</a>
+        <span>/</span>
+        <a href={`/${props.categorySlug}`}>{props.categoryName}</a>
+        <span>/</span>
+        <span>{props.itemName}</span>
+      </nav>
+      <p class="search-by">
+        Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
+      </p>
+      <h1>{props.itemName}</h1>
+      <p class="intro">
+        {props.categorySlug === "countries"
+          ? pageIntros.stations.country
+          : pageIntros.stations.tag}
+        {' '}Test with <a href="https://rplayer.js.org/" target="_blank">RPlayer</a>.
+      </p>
+      <div class="stations-list">
+        {props.stations.map((station) => (
+          <StationCard station={station} />
+        ))}
+      </div>
+    </>
+  )}
 </Layout>
 
 <style>

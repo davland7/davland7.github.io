@@ -1,4 +1,4 @@
-import { buildParams, slugify, formatTags, formatLanguages, filterPopularTags, truncate } from "./utils.ts";
+import { buildParams, slugify, formatTags, formatLanguages, truncate } from "./utils.ts";
 import type { Country, RadioStation, StationsByTerm, Tag, Term } from "./types.ts";
 import { SearchType } from "./types.ts";
 
@@ -7,6 +7,27 @@ import { SearchType } from "./types.ts";
 // de2.api.radio-browser.info
 const API_BASE = "https://de1.api.radio-browser.info/json";
 const SORT_BY_STATION_COUNT_DESC = `order=stationcount&reverse=true`;
+const SEARCH_PARAMS = {
+	order: "votes",
+	reverse: "true",
+	hidebroken: "true",
+} as const;
+
+// Helper: Transform countries/tags into Term objects
+const toTerms = (items: (Country | Tag)[], type: SearchType): Term[] =>
+	items
+		.filter((item) => item.name && slugify(item.name))
+		.map((item) => {
+			const term: Term = {
+				name: item.name,
+				type,
+				slug: slugify(item.name),
+			};
+			if (type === SearchType.Country && 'iso_3166_1' in item) {
+				term.code = item.iso_3166_1?.toLowerCase();
+			}
+			return term;
+		});
 
 export async function fetchPopularCountries(limit: number): Promise<Country[]> {
 	try {
@@ -45,32 +66,21 @@ export async function fetchTerms(limit: number = 16): Promise<Term[]> {
 			fetchPopularCountries(limit),
 		]);
 
-		const countryItems: Term[] = (countries || [])
-			.filter((c) => c.name && slugify(c.name))
-			.map((c) => ({
-				code: c.iso_3166_1 ? c.iso_3166_1.toLowerCase() : undefined,
-				name: c.name,
-				type: SearchType.Country,
-				slug: slugify(c.name),
-			}));
+		const countryTerms = toTerms(countries || [], SearchType.Country);
+		const tagTerms = toTerms(tags || [], SearchType.Tag);
 
-		const tagItems: Term[] = (tags || [])
-			.filter((t) => t.name && slugify(t.name))
-			.map((t) => ({
-				name: t.name,
-				type: SearchType.Tag,
-				slug: slugify(t.name),
-			}));
-
-		const combined: Term[] = [...countryItems, ...tagItems].sort((a, b) =>
+		return [...countryTerms, ...tagTerms].sort((a, b) =>
 			a.name.localeCompare(b.name),
 		);
-
-		return combined;
 	} catch (error) {
 		console.error("Failed to load terms:", error);
 		return [];
 	}
+}
+
+export async function getCategoriesByType(type: SearchType, limit: number = 16): Promise<Term[]> {
+	const terms = await fetchTerms(limit);
+	return terms.filter((item) => item.type === type);
 }
 
 export async function fetchStationsByTerm({
@@ -79,38 +89,31 @@ export async function fetchStationsByTerm({
 	limit = 128,
 }: StationsByTerm): Promise<RadioStation[]> {
 	const searchParams: Record<string, string> = {
-		order: "votes",
+		...SEARCH_PARAMS,
 		limit: String(limit),
-		reverse: "true",
-		hidebroken: "true",
 	};
 
 	try {
 		const response = await fetch(
-			`${API_BASE}/stations/search?${`${type}=${term}`}&${buildParams(searchParams)}`,
+			`${API_BASE}/stations/search?${type}=${term}&${buildParams(searchParams)}`,
 		);
 		if (!response.ok) throw new Error(`Failed to load stations for ${term}`);
 		let stations: any[] = await response.json();
 
-		// Filter for HTTPS and extract only necessary fields
 		stations = stations
 			.filter((s) => s.url_resolved?.startsWith("https://"))
-			.map((s) => {
-				// Formater les tags (max 3 + compteur)
-				const tagsArray = formatTags(s.tags || "");
-
-				return {
-					name: truncate(s.name, 80),
-					url: s.url_resolved,
-					tags: tagsArray,
-					country: s.country,
-					countrycode: s.countrycode?.toLowerCase() || '',
-					language: formatLanguages(s.language),
-					bitrate: s.bitrate || 0,
-					codec: s.codec || "Unknown",
-					hls: s.hls || 0,
-				};
-			});
+			.map((s) => ({
+				name: truncate(s.name, 80),
+				url: s.url_resolved,
+				tags: formatTags(s.tags || ""),
+				country: s.country,
+				countrycode: s.countrycode?.toLowerCase() || '',
+				language: formatLanguages(s.language),
+				bitrate: s.bitrate || 0,
+				codec: s.codec || "Unknown",
+				hls: s.hls || 0,
+			}))
+			.sort((a, b) => a.name.localeCompare(b.name));
 
 		return stations as RadioStation[];
 	} catch (error) {
@@ -118,4 +121,3 @@ export async function fetchStationsByTerm({
 		return [];
 	}
 }
-

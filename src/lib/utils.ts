@@ -1,13 +1,5 @@
 /**
- * Capitalise la première lettre d'un mot
- */
-export function capitalize(word: string): string {
-	if (!word) return word;
-	return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-}
-
-/**
- * Tronque une chaîne à une longueur maximale
+ * Truncate a string to a maximum length
  */
 export function truncate(text: string, maxLength: number = 60): string {
 	if (!text || text.length <= maxLength) return text;
@@ -15,25 +7,32 @@ export function truncate(text: string, maxLength: number = 60): string {
 }
 
 /**
- * Convertit une chaîne en slug URL-friendly
+ * Convert a string to URL-friendly slug
  */
 export function slugify(text: string): string {
 	return text
 		.toLowerCase()
 		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '') // Supprime les accents
-		.replace(/[^a-z0-9]+/g, '-') // Remplace les caractères spéciaux par des tirets
-		.replace(/^-+|-+$/g, ''); // Supprime les tirets au début et à la fin
+		.replace(/[\u0300-\u036f]/g, '') // Remove accents
+		.replace(/[^a-z0-9]+/g, '-') // Replace special chars with dashes
+		.replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
 }
 
 /**
- * Formate les tags : affiche max 3 premiers et ajoute '+X more' si nécessaire
+ * Private helper: Clean CSV string into array
+ */
+function cleanCsvString(str: string): string[] {
+	return str
+		.split(',')
+		.map((item) => item.trim())
+		.filter((item) => item.length > 0);
+}
+
+/**
+ * Format tags: Show max 3 and add '+X more' if needed
  */
 export function formatTags(tagsString: string = "Radio"): string[] {
-	const tags = tagsString
-		.split(',')
-		.map((tag) => capitalize(tag.trim()))
-		.filter((tag) => tag.length > 0);
+	const tags = cleanCsvString(tagsString);
 
 	const displayTags = tags.slice(0, 3);
 	const moreCount = Math.max(0, tags.length - 3);
@@ -46,36 +45,10 @@ export function formatTags(tagsString: string = "Radio"): string[] {
 }
 
 /**
- * Formate les langues en tableau avec première lettre majuscule
+ * Format languages into array
  */
 export function formatLanguages(languageString: string = "unknown"): string[] {
-	return languageString
-		.split(',')
-		.map((lang) => capitalize(lang.trim()))
-		.filter((lang) => lang.length > 0);
-}
-
-/**
- * Filtre les tags pour ne garder que ceux présents dans la liste des tags populaires
- */
-export function filterPopularTags(tagsString: string, popularTagNames: string[]): string {
-	if (!tagsString || popularTagNames.length === 0) return "Radio";
-
-	const stationTags = tagsString
-		.split(',')
-		.map((tag) => tag.trim())
-		.filter((tag) => tag.length > 0);
-
-	// Normaliser les tags populaires en minuscules pour comparaison
-	const popularTagsLower = popularTagNames.map((t) => t.toLowerCase());
-
-	// Garder seulement les tags qui matchent avec les populaires
-	const filteredTags = stationTags.filter((tag) =>
-		popularTagsLower.includes(tag.toLowerCase())
-	);
-
-	// Si aucun match, retourner "Radio" par défaut
-	return filteredTags.length > 0 ? filteredTags.join(', ') : "Radio";
+	return cleanCsvString(languageString);
 }
 
 export function buildParams(params: Record<string, string>): string {
