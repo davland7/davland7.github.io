@@ -77,10 +77,8 @@ const buildDate = new Date().toISOString().split("T")[0];
 <Layout isStationPage={props.type === "stations"}>
   {props.type === "category" && (
     <>
-      <nav class="breadcrumb">
-        <a href="/">Home</a>
-        <span>/</span>
-        <span>{props.categoryName}</span>
+      <nav>
+        <a href="/">Home</a> / {props.categoryName}
       </nav>
       <p>
         Search by: <a href={props.categorySlug === "countries" ? "/genres" : "/countries"}>
@@ -101,12 +99,8 @@ const buildDate = new Date().toISOString().split("T")[0];
 
   {props.type === "stations" && (
     <>
-      <nav class="breadcrumb">
-        <a href="/">Home</a>
-        <span>/</span>
-        <a href={`/${props.categorySlug}`}>{props.categoryName}</a>
-        <span>/</span>
-        <span>{props.itemName}</span>
+      <nav>
+        <a href="/">Home</a> / <a href={`/${props.categorySlug}`}>{props.categoryName}</a> / {props.itemName}
       </nav>
       <p>
         Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
@@ -118,7 +112,7 @@ const buildDate = new Date().toISOString().split("T")[0];
           : pageIntros.stations.tag}
         {' '}Test with <a href="https://rplayer.js.org/" target="_blank">RPlayer</a>.
       </p>
-      <div class="stations-list">
+		  <div>
         {props.stations.map((station) => (
           <StationCard station={station} />
         ))}
@@ -132,34 +126,13 @@ const buildDate = new Date().toISOString().split("T")[0];
     margin-top: 0;
   }
 
-  a {
-    text-transform: capitalize;
+  nav {
+    margin-bottom: 32px;
   }
 
-	.breadcrumb {
-		margin-bottom: 24px;
-		color: var(--color-text-light);
-	}
-
-	.breadcrumb a {
-		color: var(--color-primary);
-	}
-
-	.breadcrumb span {
-		margin: 0 8px;
-	}
-
-	.categories-list {
+	div {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmin(200px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 		gap: 16px;
-		margin-top: 24px;
-	}
-
-	.stations-list {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 16px;
-		margin-top: 24px;
 	}
 </style>

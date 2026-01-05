@@ -14,7 +14,12 @@ const { isStationPage = false } = Astro.props as Props;
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		{isStationPage && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6.14.0/css/flag-icons.min.css" />}
+		{isStationPage && (
+			<>
+				<link rel="preload" href="https://cdn.jsdelivr.net/npm/flag-icons@6.14.0/css/flag-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+				<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6.14.0/css/flag-icons.min.css" /></noscript>
+			</>
+		)}
 		<meta name="generator" content={Astro.generator} />
 		<title>Search Stream</title>
 	</head>
