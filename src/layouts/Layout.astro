@@ -1,7 +1,11 @@
 ---
 import '../styles/global.css';
 
-const buildDate = new Date().toISOString().split("T")[0];
+interface Props {
+	isStationPage?: boolean;
+}
+
+const { isStationPage = false } = Astro.props as Props;
 ---
 
 <!doctype html>
@@ -10,7 +14,7 @@ const buildDate = new Date().toISOString().split("T")[0];
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
+		{isStationPage && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6.14.0/css/flag-icons.min.css" />}
 		<meta name="generator" content={Astro.generator} />
 		<title>Search Stream</title>
 	</head>

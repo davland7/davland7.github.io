@@ -74,7 +74,7 @@ const props = Astro.props as Props;
 const buildDate = new Date().toISOString().split("T")[0];
 ---
 
-<Layout>
+<Layout isStationPage={props.type === "stations"}>
   {props.type === "category" && (
     <>
       <nav class="breadcrumb">
@@ -82,13 +82,13 @@ const buildDate = new Date().toISOString().split("T")[0];
         <span>/</span>
         <span>{props.categoryName}</span>
       </nav>
-      <p class="search-by">
+      <p>
         Search by: <a href={props.categorySlug === "countries" ? "/genres" : "/countries"}>
           {props.categorySlug === "countries" ? "Genres" : "Countries"}
         </a>
       </p>
       <h1>{pageIntros.category[props.categorySlug]?.title || props.categoryName}</h1>
-      <p class="intro">{pageIntros.category[props.categorySlug]?.description}</p>
+      <p>{pageIntros.category[props.categorySlug]?.description}</p>
       <p>
         {props.categories.map((item, index) => (
           <>
@@ -108,11 +108,11 @@ const buildDate = new Date().toISOString().split("T")[0];
         <span>/</span>
         <span>{props.itemName}</span>
       </nav>
-      <p class="search-by">
+      <p>
         Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
       </p>
       <h1>{props.itemName}</h1>
-      <p class="intro">
+      <p>
         {props.categorySlug === "countries"
           ? pageIntros.stations.country
           : pageIntros.stations.tag}
@@ -132,6 +132,10 @@ const buildDate = new Date().toISOString().split("T")[0];
     margin-top: 0;
   }
 
+  a {
+    text-transform: capitalize;
+  }
+
 	.breadcrumb {
 		margin-bottom: 24px;
 		color: var(--color-text-light);
@@ -143,10 +147,6 @@ const buildDate = new Date().toISOString().split("T")[0];
 
 	.breadcrumb span {
 		margin: 0 8px;
-	}
-
-	.search-by {
-		margin-bottom: 16px;
 	}
 
 	.categories-list {
