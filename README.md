@@ -1,4 +1,4 @@
-# Search Streams
+# Browse Radio Stations
 
 Explore and test radio stations worldwide using the [Radio Browser API](https://www.radio-browser.info/).
 

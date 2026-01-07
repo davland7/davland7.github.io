@@ -1,9 +1,9 @@
 ---
 layout: ../layouts/Layout.astro
-title: Home
+title: Browse Radio Stations
 description: Search and discover internet radio stations by genres and countries.
 ---
 
-# Search Streams
+# Browse Radio Stations
 
 Search by [Genres](/genres) or [Countries](/countries)
