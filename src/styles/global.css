@@ -1,3 +1,39 @@
+/* Common CSS Variables and Reset */
+:root {
+  --color-light: #f3f4f6;
+  --color-dark: #212121;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-bg: var(--color-light);
+  --color-text: var(--color-dark);
+  --color-border: var(--color-dark);
+  --color-surface: var(--color-white);
+
+  --color-green: #28a745;
+  --color-yellow: #ffc107;
+  --color-red: #dc3545;
+  --color-blue: #007bff;
+
+  --space-sm: 0.25rem;  /* 4px */
+  --space-md: 0.5rem;   /* 8px */
+  --space-lg: 1rem;     /* 16px */
+  --space-xl: 2rem;     /* 32px */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-dark);
+    --color-text: var(--color-light);
+    --color-border: var(--color-light);
+    --color-surface: var(--color-black);
+  }
+
+  header > img {
+    filter: brightness(0) invert(1);
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -5,41 +41,15 @@
   margin: 0;
 }
 
-:root {
-  --color-light: #f3f4f6;
-  --color-dark: #212121;
-  --color-white: #ffffff;
-  --color-black: #000000;
-
-  --color-background: var(--color-light);
-  --color-border: var(--color-dark);
-  --color-surface: var(--color-white);
-  --color-text: var(--color-dark);
-
-  --color-green: #28a745;
-  --color-yellow: #ffc107;
-  --color-red: #dc3545;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--color-dark);
-    --color-border: var(--color-light);
-    --color-surface: var(--color-black);
-    --color-text: var(--color-light);
-  }
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: var(--color-background);
+  background-color: var(--color-bg);
   color: var(--color-text);
+  line-height: 1.6;
 }
 
-.container {
-  max-width: 964px;
-  margin: 0 auto;
-  padding: 16px;
+img {
+  border-radius: var(--space-md);
 }
 
 a {
@@ -48,40 +58,55 @@ a {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 1px;
   transition: border-color 0.2s;
-  text-transform: capitalize;
 }
 
 a:hover {
   border-color: transparent;
 }
 
-/* Buttons */
 button {
   cursor: pointer;
 }
 
 button:disabled {
+  opacity: 0.5;
   cursor: default;
+  pointer-events: none;
 }
 
-/* Focus States */
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input:focus-visible {
   outline: 2px solid var(--color-border);
   outline-offset: 2px;
-  border-radius: 2px;
+}
+
+p, ul, li {
+  margin-top: var(--space-md);
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  line-height: 1.3;
 }
 
 h1 {
-  margin: 82px 0 24px;
+  margin-top: var(--space-md);
+}
+
+/* Additional global styles can be added here */
+h1 {
   text-transform: capitalize;
 }
 
-h2 {
-  margin: 0 0 16px;
+.container {
+  padding: var(--space-lg);
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-p {
-  margin: 0 0 16px 0;
-  line-height: 1.6;
+/* Homepage specific styles */
+h1#browse-radio-stations {
+  margin-top: 72px;
 }

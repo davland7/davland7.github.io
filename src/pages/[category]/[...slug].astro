@@ -102,9 +102,7 @@ const buildDate = new Date().toISOString().split("T")[0];
       <nav>
         <a href="/">Home</a> / <a href={`/${props.categorySlug}`}>{props.categoryName}</a> / {props.itemName}
       </nav>
-      <p>
-        Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>. Generated on {buildDate}.
-      </p>
+      Data provided by <a href="https://www.radio-browser.info" target="_blank">RadioBrowser</a>.
       <h1>{props.itemName}</h1>
       <p>
         {props.categorySlug === "countries"
@@ -112,28 +110,28 @@ const buildDate = new Date().toISOString().split("T")[0];
           : pageIntros.stations.tag}
         {' '}Test with <a href="https://rplayer.js.org/" target="_blank">RPlayer</a>.
       </p>
-		  <div>
+		  <div class="station-grid">
         {props.stations.map((station) => (
           <StationCard station={station} />
         ))}
       </div>
+      <footer>
+        Generated on {buildDate}.
+      </footer>
     </>
   )}
 </Layout>
 
 <style>
-  h1 {
-    margin-top: 0;
-  }
-
   nav {
-    margin-bottom: 32px;
+    height: var(--space-xl);
+    text-transform: capitalize;
   }
 
-	div {
+	.station-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 16px;
-    margin: 32px 0;
+		gap: var(--space-lg);
+    margin: var(--space-xl) 0;
 	}
 </style>

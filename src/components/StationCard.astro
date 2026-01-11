@@ -6,44 +6,58 @@ interface Props {
 }
 
 const { station } = Astro.props;
+const { name, url, country, countrycode, tags, language, codec, bitrate, hls } = station;
 
 const getRPlayerUrl = (url: string) => {
 	return `http://rplayer.js.org/?url=${encodeURIComponent(url)}`;
 };
 
-const rplayerUrl = getRPlayerUrl(station.url);
+const rplayerUrl = getRPlayerUrl(url);
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "RadioStation",
+	"name": name,
+	"broadcastFrequency": codec && bitrate > 0 ? `${codec} ${bitrate}kbps` : undefined,
+	"url": url,
+	"genre": tags.join(", "),
+	"inLanguage": language.join(", "),
+	"areaServed": country || undefined
+};
 ---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
 <div class="station-card">
 	<div class="station-header">
-		<h2>{station.name}</h2>
+		<h2>{name}</h2>
 	</div>
 
 	<div class="station-specs">
-		{station.country && (
+		{country && (
 			<span class="badge badge-country">
-				{station.countrycode && <span class={`fi fi-${station.countrycode}`}></span>}
-				{station.country}
+				{countrycode && <span class={`fi fi-${countrycode}`}></span>}
+				{country}
 			</span>
 		)}
-		{station.tags.map((tag) => (
+		{tags.map((tag) => (
 			<span class="badge badge-genre">{tag}</span>
 		))}
-		{station.language.map((lang) => (
+		{language.map((lang) => (
 			<span class="badge badge-lang">{lang}</span>
 		))}
-		{station.codec && station.codec !== "Unknown" && (
-			<span class="badge badge-codec">{station.codec}</span>
+		{codec && codec !== "Unknown" && (
+			<span class="badge badge-codec">{codec}</span>
 		)}
-		{station.bitrate > 0 && (
-			<span class="badge badge-bitrate">{station.bitrate} kbps</span>
+		{bitrate > 0 && (
+			<span class="badge badge-bitrate">{bitrate} kbps</span>
 		)}
-		{station.hls === 1 && <span class="badge badge-hls">HLS</span>}
+		{hls === 1 && <span class="badge badge-hls">HLS</span>}
 	</div>
 
 	<div class="station-actions">
 		<button
-			onclick={`navigator.clipboard.writeText('${station.url}'); alert('URL copiée!')`}
+			onclick={`navigator.clipboard.writeText('${url}'); alert('URL copiée!')`}
 		>
 			Copier URL
 		</button>
@@ -57,8 +71,8 @@ const rplayerUrl = getRPlayerUrl(station.url);
 	.station-card {
     display: flex;
 		flex-direction: column;
-		border-radius: 8px;
-		padding: 16px;
+		border-radius: var(--space-md);
+		padding: var(--space-lg);
 		background: var(--color-surface);
 		width: 100%;
 		height: 100%;
@@ -66,28 +80,28 @@ const rplayerUrl = getRPlayerUrl(station.url);
 	}
 
 	.station-header {
-		margin-bottom: 16px;
+		margin-bottom: var(--space-lg);
 	}
 
 	.station-header h2 {
 		margin: 0;
-		font-size: 1.125rem;
+		font-size: 18px;
 		font-weight: 700;
 	}
 
 	.station-specs {
 		display: flex;
-		gap: 6px;
+		gap: var(--space-md);
 		flex-wrap: wrap;
-		margin-bottom: 16px;
+		margin-bottom: var(--space-lg);
 	}
 
 	.badge {
 		display: inline-block;
-		padding: 4px 8px;
+		padding: var(--space-sm) var(--space-md);
 		background: var(--color-background);
 		border: none;
-		border-radius: 4px;
+		border-radius: var(--space-sm);
 		font-size: 12px;
 		font-weight: 600;
 		color: var(--color-text);
@@ -128,7 +142,7 @@ const rplayerUrl = getRPlayerUrl(station.url);
 	.station-actions {
 		display: flex;
     justify-content: space-between;
-		gap: 8px;
+		gap: var(--space-md);
 		margin-top: auto;
 	}
 </style>
