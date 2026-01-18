@@ -9,7 +9,7 @@ const { station } = Astro.props;
 const { name, url, country, countrycode, tags, language, codec, bitrate, hls } = station;
 
 const getRPlayerUrl = (url: string) => {
-	return `http://rplayer.js.org/?url=${encodeURIComponent(url)}`;
+	return `https://rplayer.js.org/?url=${encodeURIComponent(url)}`;
 };
 
 const rplayerUrl = getRPlayerUrl(url);
@@ -57,13 +57,13 @@ const jsonLd = {
 
 	<div class="station-actions">
 		<button
-			onclick={`navigator.clipboard.writeText('${url}'); alert('URL copiée!')`}
-		>
-			Copier URL
-		</button>
-		<a href={rplayerUrl} target="rplayer">
-			Tester
-		</a>
+      onclick={`navigator.clipboard.writeText('${url}'); alert('URL copied!')`}
+    >
+      Copy URL
+    </button>
+    <a href={rplayerUrl} target="rplayer">
+      Test
+    </a>
 	</div>
 </div>
 
